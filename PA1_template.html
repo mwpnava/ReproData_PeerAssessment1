@@ -128,7 +128,8 @@ img {
 <pre class="r"><code>    sum(is.na(dataSetActivity$steps))</code></pre>
 <pre><code>## [1] 2304</code></pre>
 <H4>
-<p>3.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated.</p>
+3.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated.
+</H4>
 <pre class="r"><code>   ## Filling missing values with mean values from totalstepsperinterval dataset
     
    x&lt;-dataSetActivity[is.na(dataSetActivity$steps),]   

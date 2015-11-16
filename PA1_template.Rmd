@@ -47,7 +47,7 @@ output: html_document
     sum(is.na(dataSetActivity$steps))
 ```
 
-<H4>3.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. 
+<H4>3.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. </H4>
 
 ```{r, echo=TRUE}
    ## Filling missing values with mean values from totalstepsperinterval dataset
