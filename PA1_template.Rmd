@@ -1,0 +1,101 @@
+---
+title: "assignment1"
+author: "Wendy Navarrete"
+date: "November 15, 2015"
+output: html_document
+---
+
+<H3>1. Load Data</H3>
+```{r, echo=TRUE}
+  dataSetActivity<-read.csv('./activity.csv')
+  str(dataSetActivity)
+```
+
+<H3>2. What is mean total number of steps taken per day?</H3>
+
+<H4>2.1 Calculating the total number of steps taken per day</H4>
+```{r, echo=TRUE}
+    totalstepsperday <- aggregate( steps ~ date, data=dataSetActivity, FUN=sum)
+``` 
+<H4>2.2 Making a histogram of the total number of steps taken each day</H4>
+```{r, echo=TRUE}
+    hist(totalstepsperday$steps, main="Total # of steps per day", xlab="Total steps per day", col='green')
+```
+
+<H4>2.3 Calculating and report the mean and median of the total number of steps taken per day</H4>
+```{R, echo=TRUE}
+    mean(totalstepsperday$steps)
+    median(totalstepsperday$steps)
+```  
+
+<H3>3. What is the average daily activity pattern?</H3>
+<H4>3.1 Make a time series plot of the 5-minute interval  and the average number of steps taken, averaged across all days</H4>
+```{r, echo=TRUE}
+    
+    totalstepsperinterval <- aggregate( steps ~ interval, data=dataSetActivity, FUN=mean)
+    plot(totalstepsperinterval$interval,totalstepsperinterval$steps, type='l', xlab = 'Average steps per interval', ylab='# of steps')
+```
+<H4>3.2 5-minute interval that contains the maximum number of steps? </H4>
+```{R, echo=TRUE}
+    totalstepsperinterval[which.max(totalstepsperinterval$steps),]
+```    
+
+<H3>3. Imputing missing values</H3>
+
+<H4>3.1 Calculate the total number of missing values in the dataset </H4>
+```{r, echo=TRUE}
+    sum(is.na(dataSetActivity$steps))
+```
+
+<H4>3.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. 
+
+```{r, echo=TRUE}
+   ## Filling missing values with mean values from totalstepsperinterval dataset
+    
+   x<-dataSetActivity[is.na(dataSetActivity$steps),]   
+   y<-dataSetActivity[!is.na(dataSetActivity$steps),]
+  
+  for(i in 1:length(x$interval)){
+    x$steps[i]<-totalstepsperinterval[totalstepsperinterval$interval==x$interval[i],2]
+  }
+```
+
+<H4>3.3 Create a new dataset that is equal to the original dataset but with the missing data filled in.</H4>
+```{r,echo=TRUE}
+     newDataSet<-rbind(x,y)
+```    
+
+
+<H4>3.4 Make a histogram of the total number of steps taken each day. Calculate and report the mean and median total number of steps taken per day.</H4>
+```{R, echo=TRUE}
+   totalstepsperdaynomissing <- aggregate( steps ~ date, data=newDataSet, FUN=sum)
+   hist(totalstepsperdaynomissing$steps, main="Total # of steps per day (non-missing values)", xlab="Total steps per day", col='red')
+   mean(totalstepsperdaynomissing$steps)
+   median(totalstepsperdaynomissing$steps)
+   
+```
+
+These values don't differ from the estimates from the first part of the assignment. Imputing missing data on the estimates of the total daily number of steps has no significant impact
+
+<H3>4. Are there differences in activity patterns between weekdays and weekends?</H3>
+
+```{r, echo=TRUE}
+   
+   datetime = strptime(newDataSet$date, "%Y-%m-%d")
+   wday<-weekdays(datetime)
+   weekend <- with(newDataSet, 
+                ifelse( weekdays(datetime) %in% c("Saturday","Sunday"),"weekend","weekday"))
+   newDataSet<-cbind(newDataSet,weekend)
+   names(newDataSet)
+   newDataSet[1,]
+
+   weekendDataSet <-newDataSet[newDataSet$weekend=="weekend",]
+   weekdayDataSet <-newDataSet[newDataSet$weekend=="weekday",]
+
+   totalstepsatweekend <- aggregate( steps ~ interval, data=weekendDataSet, FUN=mean)
+   plot(totalstepsatweekend$interval,totalstepsatweekend$steps, type='l', xlab = 'Average steps per interval on weekend', ylab='# of steps')
+    
+    totalstepsatweekdays <- aggregate( steps ~ interval, data=weekdayDataSet, FUN=mean)
+    plot(totalstepsatweekdays$interval,totalstepsatweekdays$steps, type='l', xlab = 'Average steps per interval on weekdays', ylab='# of steps')
+    
+```   
